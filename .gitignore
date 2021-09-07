@@ -1,0 +1,9 @@
+obj/*
+*.hex
+*.bin
+*.eep
+*.elf
+*.lss
+*.map
+*.sym
+.vscode/settings.json
