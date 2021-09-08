@@ -13,6 +13,7 @@ typedef struct {
 } state_func_t;
 
 void context_init(void);
+void context_enter(void);
 void context_update(void);
 void context_change_button(uint8_t row, uint8_t col, bool is_pressed);
 void context_change_state(state_t next);

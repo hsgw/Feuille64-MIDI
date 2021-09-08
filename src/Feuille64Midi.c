@@ -120,8 +120,10 @@ void midi_process() {}
 int main(void) {
     bool led_flag = false;
     SetupHardware();
-    context_init();
     GlobalInterruptEnable();
+
+    context_init();
+    context_enter();
 
     uint16_t leds_last_update = timer_read();
 

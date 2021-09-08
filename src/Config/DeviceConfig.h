@@ -52,3 +52,6 @@
 // clang-format on
 
 #define MIDI_ARP_CHANNEL (1)
+
+#define PATTERN_COUNT (6)
+#define PATTERN_STEP_MAX (8)

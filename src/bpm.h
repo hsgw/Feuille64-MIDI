@@ -17,7 +17,7 @@ void bpm_init(void);
 // 60-200 bpm
 void bpm_set(uint8_t bpm);
 
-// check tick(1/16 beat) and update global beat count
+// check tick(1/96 beat) and update global beat count
 bool bpm_tick(void);
 
 uint8_t bpm_get_current_bpm(void);

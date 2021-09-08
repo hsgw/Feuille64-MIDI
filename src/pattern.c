@@ -14,8 +14,9 @@ step_t pattern_get_step(uint8_t* step_count) {
     return step;
 }
 
-void pattern_change(uint8_t no) {}
-void pattern_edit_begin(uint8_t pattern) {}
-void pattern_edit_begin_current(void) { pattern_edit_begin(current_pattern); }
-void pattern_edit_step(uint8_t row, uint8_t col) {}
-void pattern_edit_end() {}
+void    pattern_change(uint8_t no) { current_pattern = no; }
+uint8_t pattern_get_current() { return current_pattern; }
+void    pattern_edit_begin(uint8_t pattern) {}
+void    pattern_edit_begin_current(void) { pattern_edit_begin(current_pattern); }
+void    pattern_edit_step(uint8_t row, uint8_t col) {}
+void    pattern_edit_end() {}

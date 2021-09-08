@@ -2,7 +2,7 @@
 
 #define BPM_DEFAULT (100)
 
-// F_CPU / prescaler * 60 / beat(4*n) = 96 / bpm
+// F_CPU / prescaler * 60 / beat(4*n = 96) / bpm
 #define BPM_TO_CNT_96(bpm) (uint16_t)(F_CPU / 64 * 60 / 24 / bpm - 1)
 
 #define BPM_GET_FLAG() (TIFR1 & _BV(OCF1A))
@@ -29,7 +29,7 @@ void bpm_set(uint8_t bpm) {
     BPM_CLEAR_FLAG();
 }
 
-// 1/16 beat
+// 1/96 beat
 bool bpm_tick(void) {
     bool flag = BPM_GET_FLAG();
     if (flag) {

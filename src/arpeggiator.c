@@ -28,6 +28,11 @@ arp_status_t arp_status_init(arp_alive_t alive, uint8_t root_row, uint8_t root_c
     return (arp_status_t){.alive = alive, .root_row = root_row, .root_col = root_col, .count = 0, .last_note = 0, .is_playing_note = false, .last_calc_row = 0, .last_calc_col = 0, .step = 0};
 }
 
+static arp_status_t arps[ARPS_MAX_NUM];
+static uint8_t      arps_tail;
+static uint8_t      current_pattern;
+static bool         hold;
+
 inline uint8_t calc_position(int8_t root, int8_t add, uint8_t max) {
     int8_t calc = root + add;
     if (calc < 0)
@@ -39,12 +44,8 @@ inline uint8_t calc_position(int8_t root, int8_t add, uint8_t max) {
 
 inline void apply_status(bool on, arp_status_t* status, uint8_t vel) {
     midi_send_note(on, status->last_note, vel, MIDI_ARP_CHANNEL);
-    leds_set(status->last_calc_row, status->last_calc_col, on ? 15 : 0);
+    leds_set(status->last_calc_row + 1, status->last_calc_col, on ? 15 : 0);
 }
-
-static arp_status_t arps[ARPS_MAX_NUM];
-static uint8_t      arps_tail;
-static uint8_t      current_pattern;
 
 arp_status_t arp_status_remove(uint8_t row, uint8_t col) {
     arp_status_t removed = arp_status_init(ARP_DEAD, 0, 0);
@@ -118,7 +119,7 @@ void arp_update(void) {
                 // note on
                 step_t step             = pattern_get_step(&(arps[i].step));
                 arps[i].is_playing_note = true;
-                arps[i].last_calc_row   = calc_position(arps[i].root_row, step.row, MATRIX_ROWS);
+                arps[i].last_calc_row   = calc_position(arps[i].root_row, step.row, MATRIX_ROWS - 2);
                 arps[i].last_calc_col   = calc_position(arps[i].root_col, step.col, MATRIX_COLS);
                 arps[i].last_note       = 0x20 + arps[i].last_calc_row * 8 + arps[i].last_calc_col;
 
@@ -136,22 +137,73 @@ void arp_update(void) {
 }
 
 void arp_start(uint8_t row, uint8_t col) {
-    // if same root is alive, remove it
-    arp_status_t removed = arp_status_remove(row, col);
-    if (removed.is_playing_note) {
-        apply_status(false, &removed, MIDI_STANDARD_VELOCITY);
+    arp_status_t removed;
+    if (hold) {
+        // try to remove same root
+        arp_status_t removed = arp_status_remove(row, col);
+        if (removed.is_playing_note) {
+            apply_status(false, &removed, MIDI_STANDARD_VELOCITY);
+        }
+        // if not found, add new one
+        if (removed.alive == ARP_DEAD) {
+            removed = arp_status_push(row, col);
+            if (removed.is_playing_note) {
+                apply_status(false, &removed, MIDI_STANDARD_VELOCITY);
+            }
+        }
+    } else {
+        // remove same root
+        arp_status_t removed = arp_status_remove(row, col);
+        if (removed.is_playing_note) {
+            apply_status(false, &removed, MIDI_STANDARD_VELOCITY);
+        }
+        // add new one
+        removed = arp_status_push(row, col);
+        if (removed.is_playing_note) {
+            apply_status(false, &removed, MIDI_STANDARD_VELOCITY);
+        }
     }
+}
 
-    // add new one
-    removed = arp_status_push(row, col);
+void arp_stop(uint8_t row, uint8_t col) {
+    if (hold) return;
+    arp_status_t removed = arp_status_remove(row, col);
     if (removed.is_playing_note) {
         apply_status(false, &removed, MIDI_STANDARD_VELOCITY);
     }
 }
 
-void arp_stop(uint8_t row, uint8_t col) {
-    arp_status_t removed = arp_status_remove(row, col);
-    if (removed.is_playing_note) {
-        apply_status(false, &removed, MIDI_STANDARD_VELOCITY);
+void arp_clear(void) {
+    for (uint8_t i = 0; i < ARPS_MAX_NUM; i++) {
+        arps[i].alive = ARP_DEAD;
+        if (arps[i].is_playing_note) {
+            apply_status(false, &arps[i], MIDI_STANDARD_VELOCITY);
+        }
+        arps[i].is_playing_note = false;
+    }
+}
+
+void arp_change_pattern(uint8_t no) {
+    leds_set(0, pattern_get_current(), 0);
+    pattern_change(no);
+    leds_set(0, no, 15);
+}
+
+void arp_toggle_hold(void) {
+    hold = !hold;
+    if (!hold) arp_clear();
+    leds_set(0, 7, hold ? 15 : 0);
+}
+
+bool arp_is_in_hold(void) { return hold; }
+
+void arp_restore_leds(void) {
+    leds_set_all(0);
+    leds_set(0, current_pattern, 15);
+    leds_set(0, 7, hold ? 15 : 0);
+    for (uint8_t i = 0; i < ARPS_MAX_NUM; i++) {
+        if (arps[i].is_playing_note) {
+            leds_set(arps[i].last_calc_row, arps[i].last_calc_col, 15);
+        }
     }
 }
