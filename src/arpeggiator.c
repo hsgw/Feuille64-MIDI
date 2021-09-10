@@ -24,13 +24,12 @@ typedef struct {
     uint8_t     step;
 } arp_status_t;
 
-arp_status_t arp_status_init(arp_alive_t alive, uint8_t root_row, uint8_t root_col) {
+arp_status_t arp_status_create(arp_alive_t alive, uint8_t root_row, uint8_t root_col) {
     return (arp_status_t){.alive = alive, .root_row = root_row, .root_col = root_col, .count = 0, .last_note = 0, .is_playing_note = false, .last_calc_row = 0, .last_calc_col = 0, .step = 0};
 }
 
 static arp_status_t arps[ARPS_MAX_NUM];
 static uint8_t      arps_tail;
-static uint8_t      current_pattern;
 static bool         hold;
 
 inline uint8_t calc_position(int8_t root, int8_t add, uint8_t max) {
@@ -48,7 +47,7 @@ inline void apply_status(bool on, arp_status_t* status, uint8_t vel) {
 }
 
 arp_status_t arp_status_remove(uint8_t row, uint8_t col) {
-    arp_status_t removed = arp_status_init(ARP_DEAD, 0, 0);
+    arp_status_t removed = arp_status_create(ARP_DEAD, 0, 0);
     bool         found   = false;
     for (int8_t i = 0; i < ARPS_MAX_NUM; i++) {
         if (!found && arps[i].root_row == row && arps[i].root_col == col) {
@@ -57,7 +56,7 @@ arp_status_t arp_status_remove(uint8_t row, uint8_t col) {
         }
         if (found) {
             if (i == ARPS_MAX_NUM - 1)
-                arps[i] = arp_status_init(ARP_DEAD, 0, 0);
+                arps[i] = arp_status_create(ARP_DEAD, 0, 0);
             else
                 arps[i] = arps[i + 1];
         }
@@ -70,27 +69,26 @@ arp_status_t arp_status_remove(uint8_t row, uint8_t col) {
 }
 
 arp_status_t arp_status_push(uint8_t row, uint8_t col) {
-    arp_status_t removed = arp_status_init(ARP_DEAD, 0, 0);
+    arp_status_t removed = arp_status_create(ARP_DEAD, 0, 0);
 
     if (arps_tail < ARPS_MAX_NUM) {
-        arps[arps_tail] = arp_status_init(ARP_RESERVE, row, col);
+        arps[arps_tail] = arp_status_create(ARP_RESERVE, row, col);
         arps_tail++;
         return removed;
     }
 
     // arps is full. remove top
     removed         = arp_status_remove(arps[0].root_row, arps[0].root_col);
-    arps[arps_tail] = arp_status_init(ARP_RESERVE, row, col);
+    arps[arps_tail] = arp_status_create(ARP_RESERVE, row, col);
     arps_tail++;
     return removed;
 }
 
 void arp_init(void) {
     for (int8_t i = 0; i < ARPS_MAX_NUM; i++) {
-        arps[i] = arp_status_init(ARP_DEAD, 0, 0);
+        arps[i] = arp_status_create(ARP_DEAD, 0, 0);
     }
-    arps_tail       = 0;
-    current_pattern = 0;
+    arps_tail = 0;
 }
 
 void arp_update(void) {
@@ -137,7 +135,6 @@ void arp_update(void) {
 }
 
 void arp_start(uint8_t row, uint8_t col) {
-    arp_status_t removed;
     if (hold) {
         // try to remove same root
         arp_status_t removed = arp_status_remove(row, col);
@@ -181,6 +178,7 @@ void arp_clear(void) {
         }
         arps[i].is_playing_note = false;
     }
+    hold = false;
 }
 
 void arp_change_pattern(uint8_t no) {
@@ -197,9 +195,10 @@ void arp_toggle_hold(void) {
 
 bool arp_is_in_hold(void) { return hold; }
 
-void arp_restore_leds(void) {
+void arp_restore(void) {
+    // restore leds
     leds_set_all(0);
-    leds_set(0, current_pattern, 15);
+    leds_set(0, pattern_get_current(), 15);
     leds_set(0, 7, hold ? 15 : 0);
     for (uint8_t i = 0; i < ARPS_MAX_NUM; i++) {
         if (arps[i].is_playing_note) {

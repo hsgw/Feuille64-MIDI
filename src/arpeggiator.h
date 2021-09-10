@@ -14,4 +14,4 @@ void arp_change_pattern(uint8_t no);
 void arp_toggle_hold(void);
 bool arp_is_in_hold(void);
 
-void arp_restore_leds(void);
+void arp_restore(void);

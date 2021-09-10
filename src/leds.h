@@ -7,3 +7,5 @@ void leds_update(void);
 
 void leds_set(uint8_t row, uint8_t col, uint8_t brightness);
 void leds_set_all(uint8_t brightness);
+
+void leds_set_rgb(uint8_t row, uint8_t col, uint8_t r, uint8_t g, uint8_t b);
