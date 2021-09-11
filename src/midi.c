@@ -21,3 +21,14 @@ void midi_send_note(bool on, uint8_t note, uint8_t velocity, uint8_t ch) {
     };
     midi_send_midi_event(&midi_event);
 }
+
+void midi_all_note_off(uint8_t ch) {
+    MIDI_EventPacket_t midi_event = (MIDI_EventPacket_t){
+        .Event = MIDI_EVENT(0, 0xB0),
+
+        .Data1 = 0xB0 | ch,
+        .Data2 = 0x7B,
+        .Data3 = 0,
+    };
+    midi_send_midi_event(&midi_event);
+}

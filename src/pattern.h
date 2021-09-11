@@ -1,12 +1,18 @@
 #pragma once
 
-#include <stdint.h>
 #include "DeviceConfig.h"
+#include <stdint.h>
+#include <stdbool.h>
+
+#define VELOCITY_STEP (6)
+
+static const uint8_t VELOCITY_TABLE[VELOCITY_STEP] = {16, 32, 64, 80, 100, 127};
 
 typedef struct {
     int8_t  row;
     int8_t  col;
     uint8_t vel;
+    bool    enable;
 } step_t;
 
 typedef struct {
@@ -15,8 +21,11 @@ typedef struct {
 } pattern_t;
 
 void    pattern_init(void);
-step_t  pattern_get_step(uint8_t* step_count);
+step_t  pattern_next_step(uint8_t* step_count);
 void    pattern_change(uint8_t pattern);
 uint8_t pattern_get_current(void);
+step_t  pattern_get_step(uint8_t step_count);
 
 void pattern_set_step(uint8_t step, uint8_t row, uint8_t col);
+void pattern_set_velocity(uint8_t step, uint8_t velocity);
+void pattern_toggle_enable(uint8_t step);

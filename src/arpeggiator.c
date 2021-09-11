@@ -6,9 +6,11 @@
 #include "bpm.h"
 #include "pattern.h"
 
+// polyphony
 #define ARPS_MAX_NUM (8)
-#define ARPS_BEAT_GRID (8)
-#define ARPS_ALLOW_BEAT_OFFSET (2)
+// 1/n beat
+#define ARPS_BEAT_GRID (16)
+// #define ARPS_ALLOW_BEAT_OFFSET (2)
 
 typedef enum { ARP_DEAD, ARP_RESERVE, ARP_ALIVE } arp_alive_t;
 
@@ -45,6 +47,12 @@ inline void apply_status(bool on, arp_status_t* status, uint8_t vel) {
     midi_send_note(on, status->last_note, vel, MIDI_ARP_CHANNEL);
     leds_set(status->last_calc_row + 1, status->last_calc_col, on ? 15 : 0);
 }
+
+// void debug_count(uint8_t num) {
+//     for (uint8_t i = 0; i < 8; i++) {
+//         leds_set(7, i, (num & _BV(i)) ? 15 : 0);
+//     }
+// }
 
 arp_status_t arp_status_remove(uint8_t row, uint8_t col) {
     arp_status_t removed = arp_status_create(ARP_DEAD, 0, 0);
@@ -94,8 +102,8 @@ void arp_init(void) {
 void arp_update(void) {
     if (!bpm_tick()) return;
     // check global timing
-    bool is_global_beat_tick = BEAT_CHECK(bpm_get_global_beat_count(), ARPS_BEAT_GRID, 0);
-    // uint8_t global_beat_offset  = bpm_get_global_beat_count() % ARPS_BEAT_GRID;
+    bool is_global_beat_tick = BEAT_CHECK_ON(bpm_get_global_beat_count(), ARPS_BEAT_GRID);
+
     for (uint8_t i = 0; i < ARPS_MAX_NUM; i++) {
         if (arps[i].alive == ARP_RESERVE) {
             if (is_global_beat_tick) arps[i].alive = ARP_ALIVE;
@@ -113,19 +121,22 @@ void arp_update(void) {
 
         if (arps[i].alive == ARP_ALIVE) {
             // get step and play note
-            if (BEAT_CHECK(arps[i].count, ARPS_BEAT_GRID, 0)) {
+            if (BEAT_CHECK_ON(arps[i].count, ARPS_BEAT_GRID)) {
+                if (arps[i].is_playing_note) {
+                    // note off
+                    apply_status(false, &arps[i], MIDI_STANDARD_VELOCITY);
+                    arps[i].is_playing_note = false;
+                }
                 // note on
-                step_t step             = pattern_get_step(&(arps[i].step));
-                arps[i].is_playing_note = true;
-                arps[i].last_calc_row   = calc_position(arps[i].root_row, step.row, MATRIX_ROWS - 2);
-                arps[i].last_calc_col   = calc_position(arps[i].root_col, step.col, MATRIX_COLS);
-                arps[i].last_note       = 0x20 + arps[i].last_calc_row * 8 + arps[i].last_calc_col;
+                step_t step = pattern_next_step(&(arps[i].step));
+                if (step.enable) {
+                    arps[i].is_playing_note = true;
+                    arps[i].last_calc_row   = calc_position(arps[i].root_row, step.row, MATRIX_ROWS - 2);
+                    arps[i].last_calc_col   = calc_position(arps[i].root_col, step.col, MATRIX_COLS);
+                    arps[i].last_note       = 0x20 + arps[i].last_calc_row * 8 + arps[i].last_calc_col;
 
-                apply_status(true, &arps[i], step.vel);
-            } else if (arps[i].is_playing_note && BEAT_CHECK(arps[i].count, ARPS_BEAT_GRID, ARPS_BEAT_GRID - 1)) {
-                // note off
-                arps[i].is_playing_note = false;
-                apply_status(false, &arps[i], MIDI_STANDARD_VELOCITY);
+                    apply_status(true, &arps[i], VELOCITY_TABLE[step.vel]);
+                }
             }
 
             arps[i].count++;

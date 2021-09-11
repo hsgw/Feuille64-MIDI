@@ -2,7 +2,9 @@
 #include "stdint.h"
 #include "stdbool.h"
 
-typedef enum { STATE_MAIN = 0, STATE_PATTERN, STATE_VELO, STATE_SETTING } state_t;
+#define STATE_NUM (3)
+
+typedef enum { STATE_MAIN = 0, STATE_PATTERN, STATE_VELOCITY, STATE_SETTING } state_t;
 
 typedef struct {
     void (*init)(void);

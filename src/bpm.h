@@ -10,7 +10,7 @@
 #include <avr/io.h>
 
 #define BEAT_COUNT (96)
-#define BEAT_CHECK(count, beat, offset) (count % (BEAT_COUNT / beat) == offset)
+#define BEAT_CHECK_ON(count, beat) (count % (BEAT_COUNT / beat) == 0)
 
 void bpm_init(void);
 
@@ -22,4 +22,4 @@ bool bpm_tick(void);
 
 uint8_t bpm_get_current_bpm(void);
 uint8_t bpm_get_global_beat_count(void);
-uint8_t bpm_reset_beat(void);
+void    bpm_reset(void);

@@ -44,4 +44,4 @@ uint8_t bpm_get_current_bpm(void) { return current_bpm; }
 
 uint8_t bpm_get_global_beat_count(void) { return global_beat_count; }
 
-uint8_t bpm_reset_beat(void) { bpm_set(current_bpm); }
+void bpm_reset(void) { bpm_set(current_bpm); }

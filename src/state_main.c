@@ -8,9 +8,9 @@
 
 state_func_t state_func_main = (state_func_t){.init = state_main_init, .enter = state_main_enter, .update = state_main_update, .change_button = state_main_change_button, .exit = state_main_exit};
 
-void state_main_init() { arp_init(); }
-void state_main_enter() { arp_restore(); }
-void state_main_update() { arp_update(); }
+void state_main_init(void) { arp_init(); }
+void state_main_enter(void) { arp_restore(); }
+void state_main_update(void) { arp_update(); }
 void state_main_change_button(uint8_t row, uint8_t col, bool is_pressed) {
     if (row == 1) {
         // 1st row is setting
@@ -27,4 +27,4 @@ void state_main_change_button(uint8_t row, uint8_t col, bool is_pressed) {
             arp_stop(row - 2, col);
     }
 }
-void state_main_exit() { arp_clear(); }
+void state_main_exit(void) { arp_clear(); }

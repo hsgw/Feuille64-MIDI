@@ -118,7 +118,6 @@ void midi_process() {}
  * including initial setup of all components and the main program loop.
  */
 int main(void) {
-    bool led_flag = false;
     SetupHardware();
     GlobalInterruptEnable();
 
