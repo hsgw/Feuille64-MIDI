@@ -5,6 +5,7 @@
 #include "leds.h"
 #include "bpm.h"
 #include "pattern.h"
+#include "scale.h"
 
 // polyphony
 #define ARPS_MAX_NUM (8)
@@ -133,7 +134,7 @@ void arp_update(void) {
                     arps[i].is_playing_note = true;
                     arps[i].last_calc_row   = calc_position(arps[i].root_row, step.row, MATRIX_ROWS - 2);
                     arps[i].last_calc_col   = calc_position(arps[i].root_col, step.col, MATRIX_COLS);
-                    arps[i].last_note       = 0x20 + arps[i].last_calc_row * 8 + arps[i].last_calc_col;
+                    arps[i].last_note       = scale_matrix_to_note(arps[i].last_calc_row, arps[i].last_calc_col);
 
                     apply_status(true, &arps[i], VELOCITY_TABLE[step.vel]);
                 }

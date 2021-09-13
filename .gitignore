@@ -1,4 +1,5 @@
 obj/*
+test/build/*
 *.hex
 *.bin
 *.eep
