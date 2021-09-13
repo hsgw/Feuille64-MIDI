@@ -20,12 +20,15 @@ void state_velocity_change_button(uint8_t row, uint8_t col, bool is_pressed) {
             pattern_velocity_edit_begin(col);
         }
     } else {
-        // set velocity 2-7
-        // set on-off   8
+        // set velocity 2-6
+        // set on-off   7
+        // set length 8
         if (row == 8) {
+            pattern_velocity_edit_set_length(col + 1);
+        } else if (row == 7) {
             pattern_velocity_edit_toggle_enable(col);
         } else {
-            pattern_velocity_edit_set_velocity(col, 7 - row);
+            pattern_velocity_edit_set_velocity(col, 6 - row);
         }
     }
 }
