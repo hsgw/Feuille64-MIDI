@@ -8,9 +8,9 @@
 
 #include "DeviceConfig.h"
 
-state_t current_state;
+static state_t current_state;
 
-state_func_t* state_funcs[] = {&state_func_main, &state_func_pattern, &state_func_velocity, &state_func_setting};
+static state_func_t* state_funcs[] = {&state_func_main, &state_func_pattern, &state_func_velocity, &state_func_setting};
 
 void context_init(void) {
     current_state = STATE_MAIN;

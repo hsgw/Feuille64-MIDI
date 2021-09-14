@@ -8,12 +8,12 @@
 #define BPM_GET_FLAG() (TIFR1 & _BV(OCF1A))
 #define BPM_CLEAR_FLAG() (TIFR1 |= _BV(OCF1A))
 
-uint8_t current_bpm       = BPM_DEFAULT;
-uint8_t global_beat_count = 0;
+static uint8_t current_bpm       = BPM_DEFAULT;
+static uint8_t global_beat_count = 0;
 
-bool    sync_midi        = false;
-bool    has_started_midi = false;
-uint8_t midi_tick_count  = 0;
+static bool    sync_midi        = false;
+static bool    has_started_midi = false;
+static uint8_t midi_tick_count  = 0;
 
 void bpm_init(void) {
     // init timer1
