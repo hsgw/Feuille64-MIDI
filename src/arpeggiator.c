@@ -16,37 +16,62 @@
 typedef enum { ARP_DEAD, ARP_RESERVE, ARP_ALIVE } arp_alive_t;
 
 typedef struct {
+    uint8_t pos;
+    bool    reversed;
+} arp_pos_t;
+typedef struct {
     arp_alive_t alive;
     uint8_t     root_row;
     uint8_t     root_col;
     int8_t      count;
     uint8_t     last_note;
     bool        is_playing_note;
-    uint8_t     last_calc_row;
-    uint8_t     last_calc_col;
-    uint8_t     step;
+    arp_pos_t   last_row;
+    arp_pos_t   last_col;
+    uint8_t     step_count;
 } arp_status_t;
 
 arp_status_t arp_status_create(arp_alive_t alive, uint8_t root_row, uint8_t root_col) {
-    return (arp_status_t){.alive = alive, .root_row = root_row, .root_col = root_col, .count = 0, .last_note = 0, .is_playing_note = false, .last_calc_row = 0, .last_calc_col = 0, .step = 0};
+    return (arp_status_t){
+        .alive           = alive,
+        .root_row        = root_row,
+        .root_col        = root_col,
+        .count           = 0,
+        .last_note       = 0,
+        .is_playing_note = false,
+        .last_row        = (arp_pos_t){.pos = 0, .reversed = false},
+        .last_col        = (arp_pos_t){.pos = 0, .reversed = false},
+        .step_count      = 0,
+    };
 }
 
 static arp_status_t arps[ARPS_MAX_NUM];
 static uint8_t      arps_tail;
 static bool         hold;
 
-inline uint8_t calc_position(int8_t root, int8_t add, uint8_t max) {
-    int8_t calc = root + add;
-    if (calc < 0)
-        calc = calc + max;
-    else if (calc >= max)
-        calc = calc - max;
-    return (uint8_t)calc;
+inline arp_pos_t calc_position(arp_pos_t prev, int8_t add, uint8_t max) {
+    bool   reversed = prev.reversed;
+    int8_t pos      = prev.pos + (reversed ? add * -1 : add);
+
+    // if (pos < 0 || pos >= max) {
+    //     reversed = !reversed;
+    //     pos      = prev.pos + (reversed ? add * -1 : add);
+    // }
+
+    if (pos < 0) {
+        pos      = 0 - pos;
+        reversed = !reversed;
+    } else if (pos >= max) {
+        pos      = max - (pos - max) - 2;
+        reversed = !reversed;
+    }
+
+    return (arp_pos_t){.pos = pos, .reversed = reversed};
 }
 
 inline void apply_status(bool on, arp_status_t* status, uint8_t vel) {
     midi_send_note(on, status->last_note, vel, MIDI_ARP_CHANNEL);
-    leds_set(status->last_calc_row + 1, status->last_calc_col, on ? 15 : 0);
+    leds_set(status->last_row.pos + 1, status->last_col.pos, on ? 15 : 0);
 }
 
 // void debug_count(uint8_t num) {
@@ -128,16 +153,28 @@ void arp_update(void) {
                     apply_status(false, &arps[i], MIDI_STANDARD_VELOCITY);
                     arps[i].is_playing_note = false;
                 }
-                // note on
-                step_t step = pattern_next_step(&(arps[i].step));
-                if (step.enable) {
-                    arps[i].is_playing_note = true;
-                    arps[i].last_calc_row   = calc_position(arps[i].root_row, step.row, MATRIX_ROWS - 2);
-                    arps[i].last_calc_col   = calc_position(arps[i].root_col, step.col, MATRIX_COLS);
-                    arps[i].last_note       = scale_matrix_to_note(arps[i].last_calc_row, arps[i].last_calc_col);
 
-                    apply_status(true, &arps[i], VELOCITY_TABLE[step.vel]);
+                if (arps[i].step_count == 0) {
+                    arps[i].last_row.pos      = arps[i].root_row;
+                    arps[i].last_row.reversed = false;
+                    arps[i].last_col.pos      = arps[i].root_col;
+                    arps[i].last_col.reversed = false;
                 }
+
+                // note on
+                next_step_t next = pattern_step(arps[i].step_count);
+                if (next.step.enable) {
+                    arps[i].is_playing_note = true;
+
+                    arps[i].last_row = calc_position(arps[i].last_row, next.step.row, MATRIX_ROWS - 2);
+
+                    arps[i].last_col = calc_position(arps[i].last_col, next.step.col, MATRIX_COLS);
+
+                    arps[i].last_note = scale_matrix_to_note(arps[i].last_row.pos, arps[i].last_col.pos);
+
+                    apply_status(true, &arps[i], VELOCITY_TABLE[next.step.vel]);
+                }
+                arps[i].step_count = next.next_step_count;
             }
 
             arps[i].count++;
@@ -214,7 +251,7 @@ void arp_restore(void) {
     leds_set(0, 7, hold ? 15 : 0);
     for (uint8_t i = 0; i < ARPS_MAX_NUM; i++) {
         if (arps[i].is_playing_note) {
-            leds_set(arps[i].last_calc_row, arps[i].last_calc_col, 15);
+            leds_set(arps[i].last_row.pos, arps[i].last_col.pos, 15);
         }
     }
 }

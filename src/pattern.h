@@ -20,12 +20,17 @@ typedef struct {
     uint8_t length;
 } pattern_t;
 
-void    pattern_init(void);
-step_t  pattern_next_step(uint8_t* step_count);
-void    pattern_change(uint8_t pattern);
-uint8_t pattern_get_current(void);
-step_t  pattern_get_step(uint8_t step_count);
-uint8_t pattern_get_length(void);
+typedef struct {
+    step_t  step;
+    uint8_t next_step_count;
+} next_step_t;
+
+void        pattern_init(void);
+next_step_t pattern_step(uint8_t step_count);
+void        pattern_change(uint8_t pattern);
+uint8_t     pattern_get_current(void);
+step_t      pattern_get_step(uint8_t step_count);
+uint8_t     pattern_get_length(void);
 
 void pattern_set_step(uint8_t step, uint8_t row, uint8_t col);
 void pattern_set_velocity(uint8_t step, uint8_t velocity);

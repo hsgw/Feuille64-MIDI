@@ -8,11 +8,11 @@ static uint8_t current_pattern;
 
 void pattern_init(void) { current_pattern = 0; }
 
-step_t pattern_next_step(uint8_t* step_count) {
-    step_t step = patterns[current_pattern].steps[*step_count];
-    *step_count += 1;
-    if (*step_count >= patterns[current_pattern].length) *step_count = 0;
-    return step;
+next_step_t pattern_step(uint8_t step_count) {
+    step_t step = patterns[current_pattern].steps[step_count];
+    step_count += 1;
+    if (step_count >= patterns[current_pattern].length) step_count = 0;
+    return (next_step_t){.step = step, .next_step_count = step_count};
 }
 
 void pattern_change(uint8_t pattern) { current_pattern = pattern; }
