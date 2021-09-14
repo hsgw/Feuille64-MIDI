@@ -8,11 +8,6 @@
 
 #include "DeviceConfig.h"
 
-extern state_func_t state_func_main;
-extern state_func_t state_func_pattern;
-extern state_func_t state_func_velocity;
-extern state_func_t state_func_setting;
-
 state_t current_state;
 
 state_func_t* state_funcs[] = {&state_func_main, &state_func_pattern, &state_func_velocity, &state_func_setting};

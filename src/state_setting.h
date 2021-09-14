@@ -5,7 +5,7 @@
 #include "stdint.h"
 #include "stdbool.h"
 
-state_func_t state_func_setting;
+extern state_func_t state_func_setting;
 
 void state_setting_init(void);
 void state_setting_enter(void);

@@ -4,7 +4,7 @@
 #include "stdint.h"
 #include "stdbool.h"
 
-state_func_t state_func_pattern;
+extern state_func_t state_func_pattern;
 
 void state_pattern_init(void);
 void state_pattern_enter(void);

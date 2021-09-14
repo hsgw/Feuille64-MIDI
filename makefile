@@ -17,7 +17,7 @@ ARCH         = AVR8
 F_CPU        = 16000000
 F_USB        = $(F_CPU)
 OPTIMIZATION = 3
-TARGET       = ./build/Feuille64Midi
+TARGET       = Feuille64Midi
 SRC          = $(wildcard src/*.c) $(wildcard src/qmk/*.c) $(wildcard src/light_ws2812/*.c) \
 							 $(LUFA_SRC_USB) $(LUFA_SRC_USBCLASS)
 LUFA_PATH    = lib/lufa/LUFA

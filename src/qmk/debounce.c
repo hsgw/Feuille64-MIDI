@@ -38,7 +38,7 @@ void debounce_init() {
 }
 
 void debounce_update() {
-    debounce_counter_t *counter      = debounce_counters;
+    debounce_counter_t *counter      = debounce_counters[0];
     uint8_t             current_time = wrapping_timer_read();
 
     counters_update_need = false;

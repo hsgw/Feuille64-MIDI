@@ -4,7 +4,7 @@
 #include "stdint.h"
 #include "stdbool.h"
 
-state_func_t state_func_velocity;
+extern state_func_t state_func_velocity;
 
 void state_velocity_init(void);
 void state_velocity_enter(void);
