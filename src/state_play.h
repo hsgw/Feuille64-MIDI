@@ -1,4 +1,4 @@
-/*   Copyright 2021 Takuya Urakawa (hsgw), QMK
+/*   Copyright 2021 Takuya Urakawa (hsgw)
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,16 +16,15 @@
 
 #pragma once
 
-#include "matrix.h"
+#include "context.h"
 
-// raw is the current key state
-// on entry cooked is the previous debounced state
-// on exit cooked is the current debounced state
-// changed is true if raw has changed since the last call
-void debounce(matrix_row_t raw[], matrix_row_t cooked[], uint8_t num_rows, bool changed);
+#include <stdint.h>
+#include <stdbool.h>
 
-void debounce_init(void);
+extern state_func_t state_func_play;
 
-void debounce_update(void);
-bool debounce_is_active(uint8_t row, uint8_t col);
-void debounce_set_active(uint8_t row, uint8_t col);
+void state_play_init(void);
+void state_play_enter(void);
+void state_play_update(void);
+void state_play_change_button(uint8_t row, uint8_t col, bool is_pressed);
+void state_play_exit(void);

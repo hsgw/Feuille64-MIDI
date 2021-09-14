@@ -1,3 +1,5 @@
+# Copyright 2021 Takuya Urakawa (hsgw)
+
 #
 #             LUFA Library
 #     Copyright (C) Dean Camera, 2021.

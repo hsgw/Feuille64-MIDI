@@ -1,3 +1,19 @@
+/*   Copyright 2021 Takuya Urakawa (hsgw)
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 2 of the License, or
+ *   (at your option) any later version.
+
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include "arpeggiator.h"
 
 #include "DeviceConfig.h"
@@ -52,11 +68,6 @@ static bool         hold;
 inline arp_pos_t calc_position(arp_pos_t prev, int8_t add, uint8_t max) {
     bool   reversed = prev.reversed;
     int8_t pos      = prev.pos + (reversed ? add * -1 : add);
-
-    // if (pos < 0 || pos >= max) {
-    //     reversed = !reversed;
-    //     pos      = prev.pos + (reversed ? add * -1 : add);
-    // }
 
     if (pos < 0) {
         pos      = 0 - pos;
@@ -133,16 +144,6 @@ void arp_update(void) {
     for (uint8_t i = 0; i < ARPS_MAX_NUM; i++) {
         if (arps[i].alive == ARP_RESERVE) {
             if (is_global_beat_tick) arps[i].alive = ARP_ALIVE;
-            // else if (global_beat_offset <= ARPS_ALLOW_BEAT_OFFSET) {
-            //     arps[i].alive           = ARP_ALIVE;
-            //     uint8_t note            = 0x30 + arps[i].root_row * 8 + arps[i].root_col;
-            //     arps[i].is_playing_note = true;
-            //     arps[i].last_note       = note;
-            //     arps[i].count           = global_beat_offset;
-            //     midi_send_note(true, note, MIDI_STANDARD_VELOCITY, MIDI_ARP_CHANNEL);
-            //     leds_set(arps[i].root_row, arps[i].root_col, 15);
-            //     return;
-            // }
         }
 
         if (arps[i].alive == ARP_ALIVE) {

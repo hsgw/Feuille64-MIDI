@@ -1,3 +1,5 @@
+/*   Copyright 2021 Takuya Urakawa (hsgw) */
+
 /*
              LUFA Library
      Copyright (C) Dean Camera, 2021.
@@ -70,47 +72,7 @@ USB_ClassInfo_MIDI_Device_t Keyboard_MIDI_Interface = {
         },
 };
 
-void matrix_button_changed(uint8_t row, uint8_t col, bool is_pressed) {
-    context_change_button(row, col, is_pressed);
-    // uint8_t midi_command = (is_pressed ? MIDI_COMMAND_NOTE_ON : MIDI_COMMAND_NOTE_OFF);
-
-    // MIDI_EventPacket_t MIDIEvent = (MIDI_EventPacket_t){
-    //     .Event = MIDI_EVENT(0, midi_command),
-
-    //     .Data1 = midi_command | 1,
-    //     .Data2 = 0x30 + row * 8 + col,
-    //     .Data3 = MIDI_STANDARD_VELOCITY,
-    // };
-
-    // MIDI_Device_SendEventPacket(&Keyboard_MIDI_Interface, &MIDIEvent);
-    // MIDI_Device_Flush(&Keyboard_MIDI_Interface);
-}
-
-// #define CC_NUM 3
-// #define CC_NO 12
-// uint8_t encoder_values[CC_NUM];
-
-// void encoder_changed(uint8_t no, bool clockwise) {
-//     uint8_t midi_command = MIDI_COMMAND_CONTROL_CHANGE;
-
-//     if (!clockwise && encoder_values[no] > 0) {
-//         encoder_values[no]--;
-//     }
-
-//     if (clockwise && encoder_values[no] < 127) {
-//         encoder_values[no]++;
-//     }
-
-//     MIDI_EventPacket_t MIDIEvent = (MIDI_EventPacket_t){
-//         .Event = MIDI_EVENT(0, midi_command),
-
-//         .Data1 = midi_command | 1,
-//         .Data2 = no,
-//         .Data3 = encoder_values[no],
-//     };
-//     MIDI_Device_SendEventPacket(&Keyboard_MIDI_Interface, &MIDIEvent);
-//     MIDI_Device_Flush(&Keyboard_MIDI_Interface);
-// }
+void matrix_button_changed(uint8_t row, uint8_t col, bool is_pressed) { context_change_button(row, col, is_pressed); }
 
 /** Main program entry point. This routine contains the overall program flow,
  * including initial setup of all components and the main program loop.
@@ -167,63 +129,6 @@ void SetupHardware(void) {
     USB_Init();
     midi_init();
 }
-
-/** Checks for changes in the position of the board joystick, sending MIDI
- * events to the host upon each change. */
-// void CheckJoystickMovement(void) {
-//     static uint8_t PrevJoystickStatus;
-
-//     uint8_t MIDICommand = 0;
-//     uint8_t MIDIPitch;
-
-//     /* Get current joystick mask, XOR with previous to detect joystick changes */
-//     uint8_t JoystickStatus  = Joystick_GetStatus();
-//     uint8_t JoystickChanges = (JoystickStatus ^ PrevJoystickStatus);
-
-//     /* Get board button status - if pressed use channel 10 (percussion), otherwise
-//      * use channel 1 */
-//     uint8_t Channel = ((Buttons_GetStatus() & BUTTONS_BUTTON1) ? MIDI_CHANNEL(10) : MIDI_CHANNEL(1));
-
-//     if (JoystickChanges & JOY_LEFT) {
-//         MIDICommand = ((JoystickStatus & JOY_LEFT) ? MIDI_COMMAND_NOTE_ON : MIDI_COMMAND_NOTE_OFF);
-//         MIDIPitch   = 0x3C;
-//     }
-
-//     if (JoystickChanges & JOY_UP) {
-//         MIDICommand = ((JoystickStatus & JOY_UP) ? MIDI_COMMAND_NOTE_ON : MIDI_COMMAND_NOTE_OFF);
-//         MIDIPitch   = 0x3D;
-//     }
-
-//     if (JoystickChanges & JOY_RIGHT) {
-//         MIDICommand = ((JoystickStatus & JOY_RIGHT) ? MIDI_COMMAND_NOTE_ON : MIDI_COMMAND_NOTE_OFF);
-//         MIDIPitch   = 0x3E;
-//     }
-
-//     if (JoystickChanges & JOY_DOWN) {
-//         MIDICommand = ((JoystickStatus & JOY_DOWN) ? MIDI_COMMAND_NOTE_ON : MIDI_COMMAND_NOTE_OFF);
-//         MIDIPitch   = 0x3F;
-//     }
-
-//     if (JoystickChanges & JOY_PRESS) {
-//         MIDICommand = ((JoystickStatus & JOY_PRESS) ? MIDI_COMMAND_NOTE_ON : MIDI_COMMAND_NOTE_OFF);
-//         MIDIPitch   = 0x3B;
-//     }
-
-//     if (MIDICommand) {
-//         MIDI_EventPacket_t MIDIEvent = (MIDI_EventPacket_t){
-//             .Event = MIDI_EVENT(0, MIDICommand),
-
-//             .Data1 = MIDICommand | Channel,
-//             .Data2 = MIDIPitch,
-//             .Data3 = MIDI_STANDARD_VELOCITY,
-//         };
-
-//         MIDI_Device_SendEventPacket(&Keyboard_MIDI_Interface, &MIDIEvent);
-//         MIDI_Device_Flush(&Keyboard_MIDI_Interface);
-//     }
-
-//     PrevJoystickStatus = JoystickStatus;
-// }
 
 /** Event handler for the library USB Connection event. */
 void EVENT_USB_Device_Connect(void) {}
