@@ -1,4 +1,11 @@
 #include "midi.h"
+#include "bpm.h"
+#include "DeviceConfig.h"
+
+#define MIDI_COMMAND_CLOCK (0xF8)
+#define MIDI_COMMAND_START (0xFA)
+#define MIDI_COMMAND_CONTINUE (0xFB)
+#define MIDI_COMMAND_STOP (0xFC)
 
 extern USB_ClassInfo_MIDI_Device_t Keyboard_MIDI_Interface;
 
@@ -31,4 +38,21 @@ void midi_all_note_off(uint8_t ch) {
         .Data3 = 0,
     };
     midi_send_midi_event(&midi_event);
+}
+
+void midi_process(MIDI_EventPacket_t event) {
+    switch (event.Data1) {
+        case MIDI_COMMAND_CLOCK:
+            bpm_tick();
+            break;
+        case MIDI_COMMAND_START:
+            bpm_set_midi_started();
+            break;
+        case MIDI_COMMAND_STOP:
+            bpm_set_midi_stopped();
+            midi_all_note_off(MIDI_ARP_CHANNEL);
+            break;
+        default:
+            break;
+    }
 }

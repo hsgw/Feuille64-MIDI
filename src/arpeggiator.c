@@ -126,7 +126,7 @@ void arp_init(void) {
 }
 
 void arp_update(void) {
-    if (!bpm_tick()) return;
+    if (!bpm_update()) return;
     // check global timing
     bool is_global_beat_tick = BEAT_CHECK_ON(bpm_get_global_beat_count(), ARPS_BEAT_GRID);
 

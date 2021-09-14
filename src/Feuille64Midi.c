@@ -112,8 +112,6 @@ void matrix_button_changed(uint8_t row, uint8_t col, bool is_pressed) {
 //     MIDI_Device_Flush(&Keyboard_MIDI_Interface);
 // }
 
-void midi_process() {}
-
 /** Main program entry point. This routine contains the overall program flow,
  * including initial setup of all components and the main program loop.
  */
@@ -132,11 +130,10 @@ int main(void) {
         matrix_update();
         // encoder_update();
         context_update();
-        // MIDI_EventPacket_t ReceivedMIDIEvent;
-        // while (MIDI_Device_ReceiveEventPacket(&Keyboard_MIDI_Interface, &ReceivedMIDIEvent)) {
-        //     // if ((ReceivedMIDIEvent.Event == MIDI_EVENT(0, MIDI_COMMAND_NOTE_ON)) && (ReceivedMIDIEvent.Data3 > 0))
-        //     // LEDs_SetAllLEDs(ReceivedMIDIEvent.Data2 > 64 ? LEDS_LED1 : LEDS_LED2);
-        // }
+        MIDI_EventPacket_t ReceivedMIDIEvent;
+        while (MIDI_Device_ReceiveEventPacket(&Keyboard_MIDI_Interface, &ReceivedMIDIEvent)) {
+            midi_process(ReceivedMIDIEvent);
+        }
 
         MIDI_Device_USBTask(&Keyboard_MIDI_Interface);
 

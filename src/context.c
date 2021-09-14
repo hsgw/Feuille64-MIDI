@@ -4,6 +4,7 @@
 #include "state_velocity.h"
 #include "state_setting.h"
 #include "midi.h"
+#include "bpm.h"
 
 #include "DeviceConfig.h"
 
@@ -27,6 +28,7 @@ void context_enter(void) { state_funcs[current_state]->enter(); }
 void context_update(void) { state_funcs[current_state]->update(); }
 void context_change_button(uint8_t row, uint8_t col, bool is_pressed) {
     if (row == 0) {
+        if (!is_pressed) return;
         switch (col) {
             case 0:
                 context_change_state(STATE_MAIN);
@@ -42,6 +44,9 @@ void context_change_button(uint8_t row, uint8_t col, bool is_pressed) {
                 break;
             case 5:
                 midi_all_note_off(MIDI_ARP_CHANNEL);
+                break;
+            case 7:
+                bpm_set_midi_sync(!bpm_get_midi_sync());
                 break;
             default:
                 break;
