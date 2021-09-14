@@ -11,3 +11,4 @@ void setting_set_key_note(uint8_t note);
 void setting_add_key_oct(int8_t add);
 void setting_set_diatonic_mode(uint8_t mode);
 void setting_toggle_pitch_mode(void);
+void setting_add_bpm(int8_t add);

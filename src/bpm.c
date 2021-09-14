@@ -19,8 +19,13 @@ void bpm_init(void) {
 }
 
 void bpm_set(uint8_t bpm) {
-    if (current_bpm < 60 || current_bpm > 200) return;
-    current_bpm       = bpm;
+    if (bpm < 60)
+        current_bpm = 60;
+    else if (bpm > 200)
+        current_bpm = 200;
+    else
+        current_bpm = bpm;
+
     global_beat_count = 0;
 
     OCR1A = BPM_TO_CNT_96(bpm);

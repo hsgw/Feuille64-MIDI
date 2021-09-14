@@ -2,6 +2,7 @@
 #include "DeviceConfig.h"
 #include "scale_defs.h"
 #include "scale.h"
+#include "bpm.h"
 #include "leds.h"
 
 #define SCALE_ROW_LEDS_ROW (0)
@@ -15,6 +16,8 @@
 
 #define SCALE_PITCH_MODE_LEDS_ROW (6)
 #define SCALE_PITCH_MODE_LEDS_COL (7)
+
+#define BPM_LEDS_ROW (7)
 
 void set_scale_leds(uint8_t scale, uint8_t start_row, uint8_t r, uint8_t g, uint8_t b) {
     for (uint8_t row = 0; row < 2; row++) {
@@ -62,6 +65,13 @@ void set_diatonic_mode_leds(void) {
 
 void set_pitch_mode_leds(void) { leds_set_rgb(SCALE_PITCH_MODE_LEDS_ROW, SCALE_PITCH_MODE_LEDS_COL, scale_get_pitch_mode() ? 16 : 0, 0, 0); }
 
+void set_bpm_leds(void) {
+    uint8_t bpm = bpm_get_current_bpm();
+    for (uint8_t col = 0; col < LED_COL; col++) {
+        leds_set_rgb(BPM_LEDS_ROW, col, 0, 0, bpm & (1 << (LED_COL - col - 1)) ? 16 : 0);
+    }
+}
+
 void setting_enter(void) {
     leds_set_all(0);
     set_scale_leds(scale_get_scale_row(), SCALE_ROW_LEDS_ROW, 16, 0, 0);
@@ -69,6 +79,7 @@ void setting_enter(void) {
     set_key_leds();
     set_diatonic_mode_leds();
     set_pitch_mode_leds();
+    set_bpm_leds();
 }
 
 void setting_set_scale_row(uint8_t scale) {
@@ -106,4 +117,9 @@ void setting_set_diatonic_mode(uint8_t mode) {
 void setting_toggle_pitch_mode(void) {
     scale_set_pitch_mode(!scale_get_pitch_mode());
     set_pitch_mode_leds();
+}
+
+void setting_add_bpm(int8_t add) {
+    bpm_set(bpm_get_current_bpm() + add);
+    set_bpm_leds();
 }

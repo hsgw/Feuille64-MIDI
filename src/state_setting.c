@@ -45,6 +45,16 @@ void state_setting_change_button(uint8_t row, uint8_t col, bool is_pressed) {
                 setting_set_diatonic_mode(col);
             }
             break;
+        case 8:
+            if (col == 0) {
+                setting_add_bpm(10);
+            } else if (col == 7) {
+                setting_add_bpm(-10);
+            } else if (col < 4) {
+                setting_add_bpm(1);
+            } else {
+                setting_add_bpm(-1);
+            }
         default:
             break;
     }
