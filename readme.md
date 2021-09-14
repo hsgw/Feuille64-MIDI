@@ -1,7 +1,9 @@
 Feuille64 MIDI Arpgiator
 -------------------------------
 ## What is this?
-This is alternative firmware for Feuille64 based on Polygome.   
+Firmware of MIDI arpeggiator for [Feuille64](https://booth.pm/ja/items/3148735).
+
+based on [Polygome](https://github.com/monome-community/polygome).   
 
 ## build
 ```sh
@@ -17,3 +19,8 @@ test> cmake -S . -B build
 // test
 test> cmake --build build && ./build/test_scale
 ```
+
+## License
+See LICENSE
+
+(c) 2021, Takuya Urakawa (hsgw)
