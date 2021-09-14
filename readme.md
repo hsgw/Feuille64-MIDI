@@ -1,4 +1,4 @@
-Feuille64 MIDI Arpgiator
+Feuille64 MIDI Arpeggiator 
 -------------------------------
 ## What is this?
 Firmware of MIDI arpeggiator for [Feuille64](https://booth.pm/ja/items/3148735).
