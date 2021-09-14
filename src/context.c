@@ -2,6 +2,7 @@
 #include "state_main.h"
 #include "state_pattern.h"
 #include "state_velocity.h"
+#include "state_setting.h"
 #include "midi.h"
 
 #include "DeviceConfig.h"
@@ -9,10 +10,11 @@
 extern state_func_t state_func_main;
 extern state_func_t state_func_pattern;
 extern state_func_t state_func_velocity;
+extern state_func_t state_func_setting;
 
 state_t current_state;
 
-state_func_t* state_funcs[] = {&state_func_main, &state_func_pattern, &state_func_velocity};
+state_func_t* state_funcs[] = {&state_func_main, &state_func_pattern, &state_func_velocity, &state_func_setting};
 
 void context_init(void) {
     current_state = STATE_MAIN;
@@ -34,6 +36,9 @@ void context_change_button(uint8_t row, uint8_t col, bool is_pressed) {
                 break;
             case 2:
                 context_change_state(STATE_VELOCITY);
+                break;
+            case 3:
+                context_change_state(STATE_SETTING);
                 break;
             case 5:
                 midi_all_note_off(MIDI_ARP_CHANNEL);

@@ -6,9 +6,9 @@
 
 #define SCALE_LENGTH (8)
 #define SCALE_KIND_NUM (13)
-#define SCALE_DIATONIC_MODE (6)
+#define SCALE_DIATONIC_MODE (7)
 
-#define SCALE_LIMIT (12)
+#define SCALE_OCTAVE (12)
 
 typedef enum {
     SCALE_off = 0,
@@ -26,12 +26,6 @@ typedef enum {
     SCALE_circleof5ths,
 } scale_kind;
 
-typedef enum {
-    MODE_off = 0,
-    MODE_chromatic,
-    MODE_diatonic,
-} scale_mode;
-
 // const int8_t scale_seed_table[SCALE_LENGTH][SCALE_KIND_NUM] = {
 //     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 //     {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 7},
@@ -44,7 +38,7 @@ typedef enum {
 // };
 
 // clang-format off
-const int8_t SCALE_SEED_TABLE[SCALE_KIND_NUM][SCALE_LENGTH] = {
+static const int8_t SCALE_SEED_TABLE[SCALE_KIND_NUM][SCALE_LENGTH] = {
     {0, 0, 0, 0, 0, 0, 0, 0}, 
     {0, 1, 2, 3, 4, 5, 6, 7}, 
     {0, 2, 4, 6, 8, 10, 12, 14}, 
@@ -57,11 +51,11 @@ const int8_t SCALE_SEED_TABLE[SCALE_KIND_NUM][SCALE_LENGTH] = {
     {0, 9, 18, 27, 36, 45, 54, 63}, 
     {0, 10, 20, 30, 40, 50, 60, 70}, 
     {0, 11, 22, 33, 44, 55, 66, 77}, 
-    {0, 7, 2, 9, 4, 60, 6, 13},
+    {0, 7, 2, 9, 4, 11, 6, 13},
 };
 // clang-format on
 
-const int8_t SCALE_CHRMOD_TABLE[SCALE_LIMIT] = {
+static const int8_t SCALE_CHRMOD_TABLE[SCALE_OCTAVE] = {
     0, -1, 0, 1, 0, 0, -1, 0, -1, 0, 1, 0,
 };
 
@@ -78,7 +72,7 @@ const int8_t SCALE_CHRMOD_TABLE[SCALE_LIMIT] = {
  */
 
 // clang-format off
-const int8_t SCALE_DIATONIC_TABLE[SCALE_DIATONIC_MODE][SCALE_LIMIT] = {
+static const int8_t SCALE_DIATONIC_TABLE[SCALE_DIATONIC_MODE][SCALE_OCTAVE] = {
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     { 0, 0, 0, 0,-1, 0, 0, 0, 0, 0, 0, -1},
     { 0, 0,-1, 0,-1, 0, 0, 0, 0,-1, 0, -1},
