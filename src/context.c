@@ -61,7 +61,7 @@ void context_change_button(uint8_t row, uint8_t col, bool is_pressed) {
                 midi_all_note_off(MIDI_ARP_CHANNEL);
                 break;
             case 7:
-                bpm_set_midi_sync(!bpm_get_midi_sync());
+                midi_all_note_off(MIDI_ARP_CHANNEL);
                 break;
             default:
                 break;

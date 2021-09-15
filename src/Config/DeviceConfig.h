@@ -67,7 +67,7 @@
      63, 62, 61, 60, 59, 58, 57, 56 }
 // clang-format on
 
-#define MIDI_ARP_CHANNEL (1)
+#define MIDI_ARP_CHANNEL (0)
 
 #define PATTERN_COUNT (6)
 #define PATTERN_STEP_MAX (8)

@@ -32,6 +32,8 @@ void state_play_change_button(uint8_t row, uint8_t col, bool is_pressed) {
         // 1st row is setting
         if (col < PATTERN_COUNT) {
             if (is_pressed) arp_change_pattern(col);
+        } else if (col == 6) {
+            if (is_pressed) arp_toggle_arp();
         } else if (col == 7) {
             if (is_pressed) arp_toggle_hold();
         }

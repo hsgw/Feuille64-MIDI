@@ -31,7 +31,7 @@ void state_pattern_update(void) {}
 void state_pattern_change_button(uint8_t row, uint8_t col, bool is_pressed) {
     if (!is_pressed) return;
     if (row == 1) {
-        if (col <= PATTERN_COUNT) {
+        if (col < PATTERN_COUNT) {
             pattern_edit_step_begin(col);
         }
     } else {

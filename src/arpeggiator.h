@@ -27,6 +27,7 @@ void arp_stop(uint8_t row, uint8_t col);
 void arp_clear(void);
 
 void arp_change_pattern(uint8_t no);
+void arp_toggle_arp(void);
 
 void arp_toggle_hold(void);
 bool arp_is_in_hold(void);

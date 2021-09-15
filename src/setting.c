@@ -54,7 +54,7 @@ void set_key_leds(void) {
             if (row * 8 + col < SCALE_OCTAVE) {
                 leds_set_rgb(row + SCALE_KEY_LEDS_ROW, col, 16, 16, 0);
             } else {
-                leds_set_rgb(row + SCALE_KEY_LEDS_ROW, col, 0, 0, 16);
+                leds_set_rgb(row + SCALE_KEY_LEDS_ROW, col, 0, 0, 0);
             }
         }
     }
@@ -68,7 +68,7 @@ void set_key_leds(void) {
     uint8_t oct = key / SCALE_OCTAVE;
     for (uint8_t i = 0; i < SCALE_KEY_OCTAVE_NUM; i++) {
         if (oct & (1 << (SCALE_KEY_OCTAVE_NUM - i - 1))) {
-            leds_set_rgb(SCALE_KEY_LEDS_ROW + 1, SCALE_KEY_OCTAVE_COL + i, 16, 16, 16);
+            leds_set_rgb(SCALE_KEY_LEDS_ROW + 1, SCALE_KEY_OCTAVE_COL + i, 0, 0, 16);
         }
     }
 }
@@ -83,9 +83,16 @@ void set_diatonic_mode_leds(void) {
 void set_pitch_mode_leds(void) { leds_set_rgb(SCALE_PITCH_MODE_LEDS_ROW, SCALE_PITCH_MODE_LEDS_COL, scale_get_pitch_mode() ? 16 : 0, 0, 0); }
 
 void set_bpm_leds(void) {
-    uint8_t bpm = bpm_get_current_bpm();
-    for (uint8_t col = 0; col < LED_COL; col++) {
-        leds_set_rgb(BPM_LEDS_ROW, col, 0, 0, bpm & (1 << (LED_COL - col - 1)) ? 16 : 0);
+    bool midi_sync = bpm_get_midi_sync();
+    if (midi_sync) {
+        for (uint8_t col = 0; col < LED_COL; col++) {
+            leds_set_rgb(BPM_LEDS_ROW, col, midi_sync ? 16 : 0, 0, 0);
+        }
+    } else {
+        uint8_t bpm = bpm_get_current_bpm();
+        for (uint8_t col = 0; col < LED_COL; col++) {
+            leds_set_rgb(BPM_LEDS_ROW, col, 0, 0, bpm & (1 << (LED_COL - col - 1)) ? 16 : 0);
+        }
     }
 }
 
@@ -138,5 +145,10 @@ void setting_toggle_pitch_mode(void) {
 
 void setting_add_bpm(int8_t add) {
     bpm_set(bpm_get_current_bpm() + add);
+    set_bpm_leds();
+}
+
+void setting_toggle_midi_sync(void) {
+    bpm_set_midi_sync(!bpm_get_midi_sync());
     set_bpm_leds();
 }
