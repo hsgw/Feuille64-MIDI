@@ -1,7 +1,10 @@
 name: Build Firmware
 on: 
   push:
-    branches: [main]
+    branches: 
+      - 'main'
+    paths:
+      - 'src/*'
 
 jobs:
   build:
