@@ -5,6 +5,12 @@ Firmware of MIDI arpeggiator for [Feuille64](https://booth.pm/ja/items/3148735).
 
 based on [Polygome](https://github.com/monome-community/polygome).   
 
+## manual
+[日本語マニュアル](docs/feuille64_MIDI_Firmware_manual_jp.md)
+
+# pre compiled hex file
+https://github.com/hsgw/feuille64-midi/tree/build
+
 ## build
 ```sh
 > make
